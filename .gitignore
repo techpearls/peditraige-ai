@@ -4,3 +4,7 @@
 backend/venv/
 frontend/node_modules/
 frontend/dist/
+backend/app/__pycache__/
+backend/.pytest_cache/
+backend/app/agent/__pycache__/
+backend/app/tests/__pycache__/
