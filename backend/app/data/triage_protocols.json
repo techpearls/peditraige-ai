@@ -1,0 +1,32 @@
+{
+  "fever": {
+    "guidance": "Fever in children is common. Key factors are age, temperature, and duration. Infants under 3 months with any fever need immediate evaluation. Children over 3 months with fever under 102F can often be managed at home with fluids and rest.",
+    "red_flags": ["fever over 104F", "fever in infant under 3 months", "fever lasting more than 5 days", "fever with rash", "fever with stiff neck"],
+    "home_care": ["keep child hydrated", "use age-appropriate fever reducer", "monitor temperature every 4 hours"]
+  },
+  "respiratory": {
+    "guidance": "Respiratory symptoms range from mild colds to serious conditions. Watch for breathing difficulty, wheezing, or fast breathing as escalation signs.",
+    "red_flags": ["difficulty breathing", "wheezing", "breathing faster than normal", "nostrils flaring", "skin pulling in between ribs"],
+    "home_care": ["use humidifier", "keep head elevated", "ensure adequate fluid intake"]
+  },
+  "gastrointestinal": {
+    "guidance": "Vomiting and diarrhea are common in children. The main concern is dehydration. Monitor fluid intake and output closely.",
+    "red_flags": ["signs of dehydration", "blood in stool or vomit", "severe abdominal pain", "vomiting for more than 24 hours", "no urination for 8 hours"],
+    "home_care": ["offer small sips of clear fluids frequently", "avoid solid foods until vomiting stops", "monitor wet diapers or urination"]
+  },
+  "rash": {
+    "guidance": "Most childhood rashes are harmless viral rashes. However some rashes indicate serious conditions requiring immediate care.",
+    "red_flags": ["purple or red spots that don't fade when pressed", "rash with high fever", "rash spreading rapidly", "rash with difficulty breathing"],
+    "home_care": ["keep skin clean and dry", "avoid scratching", "use fragrance free moisturizer"]
+  },
+  "ear": {
+    "guidance": "Ear pain in children is often caused by ear infections. Most mild ear infections resolve on their own within a few days.",
+    "red_flags": ["severe ear pain", "discharge from ear", "hearing loss", "fever over 102F with ear pain", "swelling behind the ear"],
+    "home_care": ["warm compress on ear", "age appropriate pain reliever", "keep ear dry"]
+  },
+  "general": {
+    "guidance": "For symptoms that don't fit a specific category, assess overall child behavior and appearance. A child who is alert, drinking fluids, and has normal skin color is generally lower risk.",
+    "red_flags": ["unusual lethargy", "inconsolable crying", "refusing all fluids", "abnormal skin color"],
+    "home_care": ["monitor closely", "ensure rest and hydration", "recheck symptoms in 4-6 hours"]
+  }
+}
