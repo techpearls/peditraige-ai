@@ -65,7 +65,7 @@ function parseSSEStream(text) {
         isProfileEvent = false;
       } else if (!inXmlBlock) {
         // only add to content if we're NOT inside an XML block
-        content += data + " " ;
+        content += data;
       }
     }
   }
@@ -84,6 +84,13 @@ function parseSSEStream(text) {
       triageData = JSON.parse(raw);
     } catch {}
   }
+
+  // normalize spacing after punctuation
+  content = content
+    .replace(/\.([A-Z])/g, '. $1')
+    .replace(/,([a-zA-Z])/g, ', $1')
+    .replace(/\?([A-Z])/g, '? $1')
+    .replace(/!([A-Z])/g, '! $1');
 
   return { displayText: content.trim(), profileData, triageData };
 }
