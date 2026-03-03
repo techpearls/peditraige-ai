@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-const API_URL = "http://localhost:8000/api/chat";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api/chat";
 
 const WELCOME_MESSAGE = {
   role: "assistant",

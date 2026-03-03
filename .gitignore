@@ -1,5 +1,6 @@
 .env
 .env.local
+frontend/.env.prod
 
 backend/venv/
 frontend/node_modules/
