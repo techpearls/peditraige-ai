@@ -80,7 +80,7 @@ def _build_gemini_messages(request: ChatRequest) -> list[dict]:
         messages[-1]["parts"][0] += context
         
         if profile.is_ready_for_triage:
-            context += "\n\n[SYSTEM: You have collected sufficient information. You MUST now produce a triage verdict. Output the <triage_result> block immediately. Do not ask any more questions.]"
+            context += "\n\n[SYSTEM: You have collected sufficient information. You MUST now produce a triage verdict. Output the <triage_result> block immediately in this response. Do not ask any more questions.]"
         messages[-1]["parts"][0] += context
 
     return messages
@@ -167,5 +167,50 @@ async def run_agent_turn(request: ChatRequest) -> tuple[str, SymptomProfile]:
             updated_profile = extract_symptom_profile(response_text)
             if updated_profile:
                 current_profile = updated_profile
+                
+            if current_profile.fever_present is None:
+                last_user_messages = [m.content.lower() for m in request.messages if m.role == "user"]
+                all_user_text = " ".join(last_user_messages)
+                
+                # also check LLM's response — it often confirms what the parent said
+                response_lower = response_text.lower()
+                
+                no_fever_signals = [
+                    # user signals
+                    "no fever" in all_user_text,
+                    "no temp" in all_user_text,
+                    "without fever" in all_user_text,
+                    # single word no as last user message
+                    last_user_messages[-1].strip() in ["no", "nope", "n", "no."],
+                    # llm confirmation signals
+                    "does not have a fever" in response_lower,
+                    "no fever" in response_lower,
+                    "without a fever" in response_lower,
+                    "doesn't have a fever" in response_lower,
+                    "afebrile" in response_lower,
+                ]
+                
+            if any(no_fever_signals):
+                current_profile.fever_present = False
+                print("DEBUG: inferred fever_present=False")
+
+            # ── FORCE TRIAGE if ready but LLM forgot to output the block ──
+            if current_profile.is_ready_for_triage and "<triage_result>" not in response_text:
+                print("DEBUG: Forcing triage — profile ready but block missing")
+                force_response = chat.send_message(
+                    "Output the triage result now using this exact format with no other text:\n\n"
+                    "<triage_result>\n"
+                    "{\n"
+                    '  "tier": "HOME or CALL_DOCTOR or GO_TO_ER",\n'
+                    '  "headline": "your headline here",\n'
+                    '  "reasoning": "your reasoning here",\n'
+                    '  "watch_for": ["symptom 1", "symptom 2"],\n'
+                    '  "disclaimer": "This is not medical advice."\n'
+                    "}\n"
+                    "</triage_result>"
+)
+                triage_text = force_response.candidates[0].content.parts[0].text
+                print(f"DEBUG forced triage response: {triage_text}")
+                response_text = response_text + "\n" + triage_text
 
             return response_text, current_profile

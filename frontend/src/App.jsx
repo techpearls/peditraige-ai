@@ -38,61 +38,46 @@ const TRIAGE_CONFIG = {
 
 // ─── Utility ─────────────────────────────────────────────────────────────────
 function parseSSEStream(text) {
-  const lines = text.split("\n");
-  let content = "";
   let profileData = null;
   let triageData = null;
-  let isProfileEvent = false;
-  let inXmlBlock = false;  // track when we're inside an XML block
 
-  for (const line of lines) {
-    // detect XML block start
-    if (line.includes("<symptom_profile>") || line.includes("<triage_result>")) {
-      inXmlBlock = true;
-    }
-    // detect XML block end
-    if (line.includes("</symptom_profile>") || line.includes("</triage_result>")) {
-      inXmlBlock = false;
-      continue;
-    }
-
-    if (line.startsWith("event: profile")) {
-      isProfileEvent = true;
-    } else if (line.startsWith("data: ")) {
-      const data = line.slice(6);
-      if (isProfileEvent) {
-        try { profileData = JSON.parse(data); } catch {}
-        isProfileEvent = false;
-      } else if (!inXmlBlock) {
-        // only add to content if we're NOT inside an XML block
-        content += data;
-      }
-    }
+  // extract profile from SSE profile event
+  const profileEventMatch = text.match(/event: profile\ndata: (.+)/);
+  if (profileEventMatch) {
+    try { profileData = JSON.parse(profileEventMatch[1]); } catch {}
   }
 
-  // extract triage result from raw text
+  // extract triage result block
   const triageMatch = text.match(/<triage_result>([\s\S]*?)<\/triage_result>/);
   if (triageMatch) {
     try {
-      let raw = triageMatch[1]
-        .split("\n")
-        .filter(l => l.startsWith("data: "))
-        .map(l => l.slice(6))
-        .join("")
-        .trim();
-      raw = raw.replace(/: True/g, ": true").replace(/: False/g, ": false").replace(/: None/g, ": null");
+      let raw = triageMatch[1].trim()
+        .replace(/: True/g, ": true")
+        .replace(/: False/g, ": false")
+        .replace(/: None/g, ": null");
       triageData = JSON.parse(raw);
     } catch {}
   }
 
-  // normalize spacing after punctuation
-  content = content
-    .replace(/\.([A-Z])/g, '. $1')
-    .replace(/,([a-zA-Z])/g, ', $1')
-    .replace(/\?([A-Z])/g, '? $1')
-    .replace(/!([A-Z])/g, '! $1');
+  // get display text — handle both cases: with and without profile event
+  let content = "";
+  const dataMatch = text.match(/^data: ([\s\S]*?)\n\nevent:/);
+  if (dataMatch) {
+    content = dataMatch[1]; // normal response with profile event
+  } else {
+    // emergency response or single event — grab everything after "data: "
+    const simpleMatch = text.match(/^data: ([\s\S]*)/);
+    if (simpleMatch) content = simpleMatch[1];
+  }
 
-  return { displayText: content.trim(), profileData, triageData };
+  content = content
+    .replace(/<symptom_profile>[\s\S]*?<\/symptom_profile>/g, "")
+    .replace(/<triage_result>[\s\S]*?<\/triage_result>/g, "")
+    .replace(/\.([A-Z])/g, '. $1')
+    .replace(/\?([A-Z])/g, '? $1')
+    .trim();
+
+  return { displayText: content, profileData, triageData };
 }
 
 // ─── Components ──────────────────────────────────────────────────────────────

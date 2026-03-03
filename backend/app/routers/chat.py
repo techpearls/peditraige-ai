@@ -7,23 +7,18 @@ from fastapi.responses import StreamingResponse
 # define a router with APIRouter()
 router = APIRouter()
 
-def stream_text(text: str):
-    """Utility function to stream text responses."""
-    # chunk by character groups instead of splitting on spaces
-    # splitting on spaces drops the spaces themselves
-    chunk_size = 4
-    for i in range(0, len(text), chunk_size):
-        yield f"data: {text[i:i+chunk_size]}\n\n"
+def stream_text(text: str):    
+    """Send entire text as a single SSE event."""
+    yield f"data: {text}\n\n"
         
 async def stream_response(request: ChatRequest):
     """Runs the agent and streams the response back as SSE."""
     response_text, updated_profile = await run_agent_turn(request)
     
-    # stream the text word by word
-    for chunk in response_text.split(" "):
-        yield f"data: {chunk} \n\n"
+    # send full response as single event
+    yield f"data: {response_text}\n\n"
     
-    # send the updated profile as a final event
+    # send updated profile as final event
     yield f"event: profile\ndata: {updated_profile.model_dump_json()}\n\n"
         
 @router.post("/chat")

@@ -57,8 +57,7 @@ class SymptomProfile(BaseModel):
         return all([
             self.child_age_years is not None,
             self.duration_hours is not None,
-            self.fever_present is not None,
-            # symptoms OR fever_present is enough — fever IS a symptom
+            self.fever_present is not None,  
             len(self.symptoms) >= 1 or self.fever_present is True,
         ])
 

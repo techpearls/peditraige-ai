@@ -7,7 +7,12 @@ PediTriage conducts a focused, conversational intake with a parent, collects str
 > ⚠️ **Disclaimer:** This is a portfolio demonstration project. It is not a medical device, does not store user data, and is not intended for real clinical use. Always consult a qualified healthcare professional.
 
 ---
+## PediTraige AI in Action
+### Chat experience
 ![PediTriage AI](docs/screenshot.png)
+
+### Result experience
+![PediTriage AI](docs/screenshot_with_result.png)
 
 ## Why This Is an Agent, Not a Chatbot
 
