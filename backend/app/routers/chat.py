@@ -24,9 +24,11 @@ async def stream_response(request: ChatRequest):
     yield f"event: profile\ndata: {updated_profile.model_dump_json()}\n\n"
         
 @router.post("/chat")
-async def chat_endpoint(chat_request: ChatRequest):
-    last_message = chat_request.messages[-1].content if chat_request.messages else ""
-    print(last_message)
+async def chat_endpoint(chat_request: ChatRequest):     
+    # get last USER message
+    user_messages = [m for m in chat_request.messages if m.role == "user"]
+    last_message = user_messages[-1].content if user_messages else ""    
+    
     if check_for_emergency(last_message):
         return StreamingResponse(stream_text(EMERGENCY_RESPONSE), media_type="text/event-stream")
     

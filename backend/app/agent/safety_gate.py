@@ -41,7 +41,7 @@ _EMERGENCY_PATTERNS: list[re.Pattern] = [
     re.compile(r"\bnot\s+responding\b", re.IGNORECASE),
 
     # Seizures
-    re.compile(r"\bseizure\b", re.IGNORECASE),
+    re.compile(r"\bseizur", re.IGNORECASE),
     re.compile(r"\bseizing\b", re.IGNORECASE),
     re.compile(r"\bconvuls(ing|ion|ions)\b", re.IGNORECASE),
 

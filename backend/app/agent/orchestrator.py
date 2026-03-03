@@ -78,6 +78,10 @@ def _build_gemini_messages(request: ChatRequest) -> list[dict]:
 - Ready for triage: {profile.is_ready_for_triage}
 - Still need: {', '.join(profile.questions_still_needed) if profile.questions_still_needed else 'nothing — ready to triage'}]"""
         messages[-1]["parts"][0] += context
+        
+        if profile.is_ready_for_triage:
+            context += "\n\n[SYSTEM: You have collected sufficient information. You MUST now produce a triage verdict. Output the <triage_result> block immediately. Do not ask any more questions.]"
+        messages[-1]["parts"][0] += context
 
     return messages
 
