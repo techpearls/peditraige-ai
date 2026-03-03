@@ -9,8 +9,11 @@ router = APIRouter()
 
 def stream_text(text: str):
     """Utility function to stream text responses."""
-    for chunk in text.split(" "):
-        yield f"data: {chunk} \n\n"
+    # chunk by character groups instead of splitting on spaces
+    # splitting on spaces drops the spaces themselves
+    chunk_size = 3
+    for i in range(0, len(text), chunk_size):
+        yield f"data: {text[i:i+chunk_size]}\n\n"
         
 async def stream_response(request: ChatRequest):
     """Runs the agent and streams the response back as SSE."""

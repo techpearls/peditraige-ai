@@ -65,7 +65,7 @@ function parseSSEStream(text) {
         isProfileEvent = false;
       } else if (!inXmlBlock) {
         // only add to content if we're NOT inside an XML block
-        content += data;
+        content += data + " " ;
       }
     }
   }
@@ -384,6 +384,8 @@ export default function App() {
     setIsLoading(true);
     setStreamingText("");
     setTriageResult(null);
+
+    console.log("Sending symptom_profile:", symptomProfile);
 
     try {
       abortRef.current = new AbortController();

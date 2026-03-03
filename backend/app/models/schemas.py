@@ -54,17 +54,12 @@ class SymptomProfile(BaseModel):
 
     @property
     def is_ready_for_triage(self) -> bool:
-        """
-        Decision model: has the agent collected the minimum required
-        information to produce a responsible triage verdict?
-
-        This check runs in Python, not in the LLM. It is deterministic.
-        """
         return all([
             self.child_age_years is not None,
-            len(self.symptoms) >= 1,
             self.duration_hours is not None,
             self.fever_present is not None,
+            # symptoms OR fever_present is enough — fever IS a symptom
+            len(self.symptoms) >= 1 or self.fever_present is True,
         ])
 
     @property
